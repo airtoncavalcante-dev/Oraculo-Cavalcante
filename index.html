@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oráculo Cavalcante - Matrix IA</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        /* Fundo preto puro e fontes monoestilizadas estilo Matrix */
+        body { 
+            font-family: 'Courier New', Courier, monospace; 
+            background: #000000; 
+            color: #33ff33; 
+            display: flex; 
+            height: 100vh; 
+        }
+        
+        .main-container { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+        }
+        
+        .header { 
+            text-align: center; 
+            padding: 25px 0; 
+            border-bottom: 1px solid #003300; 
+        }
+        
+        /* Título Verde Limão Brilhante com Efeito Pulsante */
+        .header h1 { 
+            font-size: 2rem; 
+            font-weight: 700; 
+            color: #33ff33; 
+            text-shadow: 0 0 10px #33ff33, 0 0 20px #00ff00;
+            letter-spacing: 2px; 
+            animation: pulsar 2s infinite ease-in-out;
+        }
+        
+        .header p { 
+            font-size: 0.9rem; 
+            color: #008800; 
+            margin-top: 8px; 
+            font-weight: bold;
+        }
+        
+        /* Área do Chat */
+        .chat-area { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 20px 0; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
+        }
+        
+        /* Barra de rolagem customizada estilo hacker */
+        .chat-area::-webkit-scrollbar { width: 6px; }
+        .chat-area::-webkit-scrollbar-track { background: #000; }
+        .chat-area::-webkit-scrollbar-thumb { background: #003300; border-radius: 3px; }
+        
+        .row { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 6px; 
+            animation: surgir 0.3s ease-out; 
+        }
+        .user-row { align-items: flex-end; }
+        .bot-row { align-items: flex-start; }
+        
+        .bubble { 
+            padding: 14px 18px; 
+            border-radius: 8px; 
+            max-width: 85%; 
+            line-height: 1.6; 
+            font-size: 1rem; 
+            white-space: pre-wrap; 
+        }
+        
+        /* Balão do Usuário */
+        .user-bubble { 
+            background: #002200; 
+            color: #33ff33; 
+            border: 1px solid #00ff00;
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.3);
+        }
+        
+        /* Balão da IA */
+        .bot-bubble { 
+            background: #000000; 
+            color: #33ff33; 
+            border: 1px solid #003300; 
+            width: 100%; 
+        }
+        
+        .status-search { 
+            font-size: 0.85rem; 
+            color: #00ff00; 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            margin-bottom: 4px; 
+            font-weight: bold;
+            text-shadow: 0 0 5px #00ff00;
+        }
+        
+        /* Container de Input */
+        .input-container { 
+            padding: 15px 0; 
+            background: #000000; 
+        }
+        
+        .input-box { 
+            background: #000000; 
+            border: 1px solid #003300; 
+            border-radius: 8px; 
+            display: flex; 
+            align-items: center; 
+            padding: 6px 14px; 
+            transition: 0.2s; 
+        }
+        
+        .input-box:focus-within { 
+            border-color: #00ff00; 
+            box-shadow: 0 0 12px rgba(0, 255, 0, 0.4); 
+        }
+        
+        input { 
+            flex: 1; 
+            background: transparent; 
+            border: none; 
+            padding: 12px; 
+            color: #33ff33; 
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.05rem; 
+            outline: none; 
+        }
+        
+        input::placeholder {
+            color: #004400;
+        }
+        
+        button { 
+            background: #005500; 
+            border: 1px solid #00ff00; 
+            color: #33ff33; 
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold; 
+            padding: 12px 24px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            transition: 0.2s; 
+            font-size: 0.95rem; 
+            text-shadow: 0 0 5px #00ff00;
+        }
+        
+        button:hover { 
+            background: #00ff00; 
+            color: #000000;
+            box-shadow: 0 0 10px #00ff00;
+        }
+
+        /* Animações */
+        @keyframes pulsar {
+            0% { transform: scale(1); text-shadow: 0 0 10px #33ff33, 0 0 20px #00ff00; }
+            50% { transform: scale(1.03); text-shadow: 0 0 15px #33ff33, 0 0 30px #00ff00, 0 0 40px #00ff00; }
+            100% { transform: scale(1); text-shadow: 0 0 10px #33ff33, 0 0 20px #00ff00; }
+        }
+
+        @keyframes surgir { 
+            from { opacity: 0; transform: translateY(8px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <div class="header">
+        <h1>🔮 ORÁCULO CAVALCANTE</h1>
+        <p>[ SISTEMA INTEGRADO DE CONHECIMENTO GERAL ]</p>
+    </div>
+    
+    <div class="chat-area" id="chatArea">
+        <div class="row bot-row">
+            <div class="bubble bot-bubble">Conexão estabelecida. Eu sou o Oráculo Cavalcante. Minha base de dados está pronta no seu terminal local. O que você deseja descriptografar hoje?</div>
+        </div>
+    </div>
+    
+    <div class="input-container">
+        <div class="input-box">
+            <input type="text" id="queryInput" placeholder="Digite sua diretriz aqui..." onkeypress="if(event.key === 'Enter') consultarOraculo()">
+            <button onclick="consultarOraculo()">EXECUTAR</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Sua chave pessoal inserida de forma direta e ativa
+    const GROQ_API_KEY = "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";
+
+    async function consultarOraculo() {
+        const input = document.getElementById('queryInput');
+        const query = input.value.trim();
+        if (!query) return;
+
+        input.value = '';
+        criarLinhaTexto(query, 'user');
+
+        const statusDiv = criarLinhaTexto('>> PROCESSANDO DIRETRIZ NO BANCO DE DADOS...', 'bot', true);
+
+        try {
+            // Chamada direta para o endpoint de chat da Groq compatível com navegadores locais
+            const respostaAi = await fetch("https://groq.com", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${GROQ_API_KEY}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    model: "llama-3.3-70b-versatile", // Modelo atualizado de alta capacidade da Groq
+                    messages: [
+                        { 
+                            role: "system", 
+                            content: "Você é o 'Oráculo Cavalcante', uma inteligência artificial sábia, fria, cirúrgica e muito direta, com estilo hacker/cyberpunk. Responda a qualquer pergunta de conhecimentos gerais com clareza matemática e precisão em português brasileiro." 
+                        },
+                        { role: "user", content: query }
+                    ],
+                    temperature: 0.5
+                })
+            });
+
+            if (!respostaAi.ok) {
+                throw new Error("Falha na resposta do servidor Groq");
+            }
+            
+            const dadosGroq = await respostaAi.json();
+            statusDiv.parentElement.remove(); // Remove o aviso de carregamento
+            
+            const respostaFinal = dadosGroq.choices[0].message.content;
+            criarLinhaTexto(respostaFinal, 'bot');
+
+        } catch (erro) {
+            statusDiv.innerText = "❌ ERRO DE PROTOCOLO: Falha na conexão com a rede Groq.";
+            console.error(erro);
+        }
+    }
+
+    function criarLinhaTexto(texto, tipo, ehStatus = false) {
+        const chatArea = document.getElementById('chatArea');
+        const row = document.createElement('div');
+        row.classList.add('row', `${tipo}-row`);
+
+        if (ehStatus) {
+            const status = document.createElement('div');
+            status.classList.add('status-search');
+            status.innerText = texto;
+            row.appendChild(status);
+            chatArea.appendChild(row);
+            chatArea.scrollTop = chatArea.scrollHeight;
+            return status;
+        }
+
+        const bubble = document.createElement('div');
+        bubble.classList.add('bubble', `${tipo}-bubble`);
+        bubble.innerText = texto;
+        
+        row.appendChild(bubble);
+        chatArea.appendChild(row);
+        chatArea.scrollTop = chatArea.scrollHeight;
+        return bubble;
+    }
+</script>
+
+</body>
+</html>
