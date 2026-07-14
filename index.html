@@ -33,7 +33,7 @@
 <body>
   <div class="main-container">
     <div class="header">
-      <h1>🦉 ORÁCULO CAVALCANTE</h1>
+      <h1>ORÁCULO CAVALCANTE</h1>
       <p>[ SISTEMA INTEGRADO DE CONHECIMENTO GERAL ]</p>
     </div>
     <div class="chat-area" id="chatArea">
@@ -72,7 +72,19 @@
         const data = await res.json();
         statusDiv.parentElement.remove();
 
-        let respostaFinal = data.Abstract || data.Answer || "Não encontrei resposta direta, tente outra pergunta.";
+        let respostaFinal = data.Abstract || data.Answer;
+
+        if (!respostaFinal) {
+          // Fallback: Wikipedia
+          const wikiRes = await fetch("https://pt.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(query));
+          if (wikiRes.ok) {
+            const wikiData = await wikiRes.json();
+            respostaFinal = wikiData.extract;
+          }
+        }
+
+        if (!respostaFinal) respostaFinal = "Não encontrei resposta direta, tente outra pergunta.";
+
         criarLinhaTexto(respostaFinal, 'bot');
       } catch(e) {
         statusDiv.innerText = "❌ ERRO DE PROTOCOLO";
