@@ -176,13 +176,13 @@
 <div class="main-container">
     <div class="header">
         <h1>🦉 ORÁCULO CAVALCANTE</h1>
-        <!-- Carimbo de controle de versão visual modificado conforme solicitado -->
-        <p>[ SISTEMA INTEGRADO - ATUALIZAÇÃO SINCRO: 22:04 h ]</p>
+        <p>[ SISTEMA INTEGRADO DE CONHECIMENTO GERAL ]</p>
     </div>
     
     <div class="chat-area" id="chatArea">
         <div class="row bot-row">
-            <div class="bubble bot-bubble">Conexão estabelecida via Vercel Edge. Eu sou o Oráculo Cavalcante. Todos os canais de criptografia foram tunelados. O que você deseja descriptografar hoje?</div>
+            <!-- Mensagem alterada drasticamente para você identificar o carregamento na Vercel -->
+            <div class="bubble bot-bubble">SISTEMA ATUALIZADO VIA VERCEL EDGE às 22:15 h. Eu sou o Oráculo Cavalcante. Digite sua diretriz abaixo e o novo protocolo de rede processará sua mensagem usando sua chave dedicada.</div>
         </div>
     </div>
     
@@ -216,17 +216,16 @@
         const MINHA_CHAVE = "AQ.Ab8RN6Ie0tNy0kh96YjjO_WxlOGYU1dObk04KHR1Xk1ZKeUNmw";
 
         try {
-            // Nova URL do barramento Vertex AI Cloud que aceita tokens com o cabeçalho AQ de forma nativa
             const urlEndpoint = `https://googleapis.com`;
             
-            // Usamos a ponte de CORS para camuflar o cabeçalho de origem do navegador de forma limpa
+            // Camuflagem CORS ativa
             const urlProxy = "https://corsproxy.io?" + encodeURIComponent(urlEndpoint);
             
             const response = await fetch(urlProxy, {
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json",
-                    "x-goog-api-key": MINHA_CHAVE // Movemos a autenticação para o cabeçalho seguro exigido pelo formato novo
+                    "x-goog-api-key": MINHA_CHAVE // Validador do formato novo de chaves
                 },
                 body: JSON.stringify({
                     contents: [{ parts: [{ text: query }] }],
@@ -239,7 +238,7 @@
             const data = await response.json();
             statusDiv.parentElement.remove(); 
 
-            const respostaFinal = data.candidates[0].content.parts[0].text;
+            const respostaFinal = data.candidates.content.parts.text;
             criarLinhaTexto(respostaFinal, 'bot');
 
         } catch (erro) {
