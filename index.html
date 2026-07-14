@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Oráculo Cavalcante - Matrix IA</title>
+  <title>Oráculo Cavalcante</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Courier New', Courier, monospace; background: #000; color: #33ff33; display: flex; height: 100vh; }
@@ -34,17 +34,17 @@
   <div class="main-container">
     <div class="header">
       <h1>ORÁCULO CAVALCANTE</h1>
-      <p>[ SISTEMA INTEGRADO DE CONHECIMENTO GERAL ]</p>
+      <p>[ SISTEMA ONLINE DE CONHECIMENTO GERAL ]</p>
     </div>
     <div class="chat-area" id="chatArea">
       <div class="row bot-row">
-        <div class="bubble bot-bubble">SISTEMA ONLINE. Eu sou o Oráculo Cavalcante. Digite sua pergunta abaixo.</div>
+        <div class="bubble bot-bubble">Eu sou o Oráculo Cavalcante. Digite sua pergunta abaixo.</div>
       </div>
     </div>
     <div class="input-container">
       <div class="input-box">
         <textarea id="input" placeholder="Pergunte o que quiser" onkeypress="verificarEnter(event)"></textarea>
-        <button onclick="consultarOraculo()">EXECUTAR</button>
+        <button onclick="consultarOraculo()">Enviar</button>
       </div>
     </div>
   </div>
@@ -68,23 +68,12 @@
       const statusDiv = criarLinhaTexto('>> PROCESSANDO...', 'bot', true);
 
       try {
-        const res = await fetch("https://api.duckduckgo.com/?q=" + encodeURIComponent(query) + "&format=json");
+        // Chamada ao backend no Vercel que usa sua chave do Bing
+        const res = await fetch("/api/search?q=" + encodeURIComponent(query));
         const data = await res.json();
         statusDiv.parentElement.remove();
 
-        let respostaFinal = data.Abstract || data.Answer;
-
-        if (!respostaFinal) {
-          // Fallback: Wikipedia
-          const wikiRes = await fetch("https://pt.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(query));
-          if (wikiRes.ok) {
-            const wikiData = await wikiRes.json();
-            respostaFinal = wikiData.extract;
-          }
-        }
-
-        if (!respostaFinal) respostaFinal = "Não encontrei resposta direta, tente outra pergunta.";
-
+        let respostaFinal = data.answer || "Não encontrei resposta direta, tente outra pergunta.";
         criarLinhaTexto(respostaFinal, 'bot');
       } catch(e) {
         statusDiv.innerText = "❌ ERRO DE PROTOCOLO";
