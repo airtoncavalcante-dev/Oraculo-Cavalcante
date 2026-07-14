@@ -123,7 +123,6 @@
             box-shadow: 0 0 12px rgba(0, 255, 0, 0.4); 
         }
         
-        /* Estilização do Textarea customizado */
         textarea { 
             flex: 1; 
             background: transparent; 
@@ -182,13 +181,12 @@
     
     <div class="chat-area" id="chatArea">
         <div class="row bot-row">
-            <div class="bubble bot-bubble">Conexão estabelecida com a rede. Eu sou o Oráculo Cavalcante. Caixa de texto em modo textarea expandido. O que você deseja descriptografar hoje? atualizacao feita em 21:55 h</div>
+            <div class="bubble bot-bubble">Conexão estabelecida com a rede descentralizada. Eu sou o Oráculo Cavalcante. Todos os protocolos de segurança locais foram contornados com sucesso. O que você deseja descriptografar hoje? atualizacao feita em 22:00 h</div>
         </div>
     </div>
     
     <div class="input-container">
         <div class="input-box">
-            <!-- Seu textarea integrado e configurado com suporte a Enter -->
             <textarea aria-controls="matches" role="combobox" autocomplete="off" id="input" type="search" spellcheck="false" part="input" aria-expanded="false" placeholder="Pergunte o que quiser" onkeypress="verificarEnter(event)"></textarea>
             <button onclick="consultarOraculo()">EXECUTAR</button>
         </div>
@@ -196,7 +194,6 @@
 </div>
 
 <script>
-    // Suporte para enviar com o Enter normal do teclado
     function verificarEnter(event) {
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();
@@ -212,29 +209,29 @@
         textCampo.value = '';
         criarLinhaTexto(query, 'user');
 
-        const statusDiv = criarLinhaTexto('>> PROCESSANDO DIRETRIZ NO BANCO DE DADOS...', 'bot', true);
+        const statusDiv = criarLinhaTexto('>> PROCESSANDO DIRETRIZ NO BANCO DE DADOS DESCENTRALIZADO...', 'bot', true);
 
         try {
-            // URL de processamento limpo via API de inteligência artificial de livre tráfego
-            const url = `https://duckduckgo.com{encodeURIComponent(query)}&format=json&no_html=1`;
+            // Canal alternativo de processamento de texto aberto livre de CORS no navegador
+            const url = `https://vercel.app`;
             
-            const response = await fetch(url);
-            if (!response.ok) throw new Error("Erro de resposta na rede central");
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: `Responda de forma curta, direta e sábia, como um computador antigo/hacker do filme Matrix, em português brasileiro: ${query}`
+                })
+            });
+
+            if (!response.ok) throw new Error("Erro na rede central de transmissão");
 
             const data = await response.json();
             statusDiv.parentElement.remove(); 
 
-            // Filtra resumos automáticos gerados pela base de dados do Oráculo
-            let respostaFinal = data.AbstractText || data.Definition;
-            
-            if (!respostaFinal && data.RelatedTopics && data.RelatedTopics.length > 0) {
-                respostaFinal = data.RelatedTopics[0].Text;
-            }
-            
-            if (!respostaFinal) {
-                respostaFinal = "Erro de decodificação: A diretriz enviada não retornou dados encadeados suficientes na rede geral. Tente reformular a pergunta.";
-            }
-
+            // Exibe a resposta final calculada pelo processador
+            const respostaFinal = data.reply || data.response || "Diretriz processada sem retorno de caracteres.";
             criarLinhaTexto(respostaFinal, 'bot');
 
         } catch (erro) {
