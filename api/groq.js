@@ -9,14 +9,13 @@ export default async function handler(req, res) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "llama-3.1-8b-instruct", // modelo atualizado e suportado
+        model: "grok-4.3", // modelo ativo em julho/2026
         messages: [{ role: "user", content: pergunta }]
       })
     });
 
     const data = await resposta.json();
 
-    // Captura segura da resposta
     const texto = data.choices?.[0]?.message?.content
                || data.choices?.[0]?.messages?.[0]?.content
                || JSON.stringify(data)
