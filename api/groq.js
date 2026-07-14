@@ -15,7 +15,13 @@ export default async function handler(req, res) {
     });
 
     const data = await resposta.json();
-    const texto = data.choices?.[0]?.message?.content || "Não encontrei resposta.";
+
+    // Captura segura da resposta
+    const texto = data.choices?.[0]?.message?.content
+               || data.choices?.[0]?.messages?.[0]?.content
+               || JSON.stringify(data)
+               || "Não encontrei resposta.";
+
     res.status(200).json({ answer: texto });
   } catch (error) {
     res.status(500).json({ answer: "Erro ao consultar Groq API." });
