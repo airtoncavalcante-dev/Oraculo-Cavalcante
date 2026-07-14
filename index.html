@@ -172,13 +172,15 @@
 
 <div class="main-container">
     <div class="header">
-        <h1>🔮 ORÁCULO CAVALCANTE</h1>
+        <!-- Ícone alterado para o programador no notebook -->
+        <h1>👨‍💻 ORÁCULO CAVALCANTE</h1>
         <p>[ SISTEMA INTEGRADO DE CONHECIMENTO GERAL ]</p>
     </div>
     
     <div class="chat-area" id="chatArea">
         <div class="row bot-row">
-            <div class="bubble bot-bubble">Conexão estabelecida com a rede Google. Eu sou o Oráculo Cavalcante. Sistema operacional em modo direto ativo. O que você deseja descriptografar hoje? atualizacao feita em 21:36 h</div>
+            <!-- Mensagem com a marcação de tempo atualizada -->
+            <div class="bubble bot-bubble">Conexão estabelecida com a rede. Eu sou o Oráculo Cavalcante. Sistema operacional em modo direto ativo. O que você deseja descriptografar hoje? atualizacao feita em 21:42 h</div>
         </div>
     </div>
     
@@ -191,9 +193,6 @@
 </div>
 
 <script>
-    // Chave no formato clássico (AIzaSy) liberada para conexões diretas via navegador
-    const API_KEY = "AIzaSyD" + "vU7b9M_O5" + "XyXF" + "RfZB1vS" + "6O_b3Ww_HlU4"; 
-
     async function consultarOraculo() {
         const input = document.getElementById('queryInput');
         const query = input.value.trim();
@@ -205,7 +204,8 @@
         const statusDiv = criarLinhaTexto('>> PROCESSANDO DIRETRIZ NO BANCO DE DADOS...', 'bot', true);
 
         try {
-            const url = `https://googleapis.com{API_KEY}`;
+            // Usando uma API de teste pública livre de CORS para o navegador não travar a conexão
+            const url = `https://openrouter.ai`;
             
             const response = await fetch(url, {
                 method: "POST",
@@ -213,27 +213,30 @@
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    contents: [{
-                        parts: [{
-                            text: query
-                        }]
-                    }],
-                    systemInstruction: {
-                        parts: [{
-                            text: "Você é o 'Oráculo Cavalcante', uma inteligência artificial sábia, fria, cirúrgica e muito direta, com estilo hacker/cyberpunk. Responda a qualquer pergunta de conhecimentos gerais com clareza em português brasileiro."
-                        }]
-                    }
+                    // Modelo Gemini gratuito disponível na rede pública de desenvolvedores
+                    model: "google/gemini-2.5-flash:free",
+                    messages: [
+                        {
+                            role: "system",
+                            content: "Você é o 'Oráculo Cavalcante', uma inteligência artificial sábia, fria, cirúrgica e muito direta, com estilo hacker/cyberpunk. Responda a qualquer pergunta de conhecimentos gerais com clareza em português brasileiro."
+                        },
+                        { 
+                            role: "user", 
+                            content: query 
+                        }
+                    ]
                 })
             });
 
             if (!response.ok) {
-                throw new Error("Resposta inválida dos servidores do Google");
+                throw new Error("Falha de resposta na ponte pública");
             }
 
             const data = await response.json();
             statusDiv.parentElement.remove(); 
             
-            const textResponse = data.candidates[0].content.parts[0].text;
+            // Extrai a resposta gerada pela rede pública do Gemini
+            const textResponse = data.choices[0].message.content;
             criarLinhaTexto(textResponse, 'bot');
 
         } catch (erro) {
