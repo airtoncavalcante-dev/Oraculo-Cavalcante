@@ -1,0 +1,23 @@
+export default async function handler(req, res) {
+  const { pergunta } = req.query;
+
+  try {
+    const resposta = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "llama3-8b-8192",
+        messages: [{ role: "user", content: pergunta }]
+      })
+    });
+
+    const data = await resposta.json();
+    const texto = data.choices?.[0]?.message?.content || "Não encontrei resposta.";
+    res.status(200).json({ answer: texto });
+  } catch (error) {
+    res.status(500).json({ answer: "Erro ao consultar Groq API." });
+  }
+}
