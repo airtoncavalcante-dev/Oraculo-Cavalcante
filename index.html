@@ -113,8 +113,8 @@
             border: 1px solid #003300; 
             border-radius: 8px; 
             display: flex; 
-            align-items: center; 
-            padding: 6px 14px; 
+            align-items: flex-end; 
+            padding: 8px 14px; 
             transition: 0.2s; 
         }
         
@@ -123,18 +123,21 @@
             box-shadow: 0 0 12px rgba(0, 255, 0, 0.4); 
         }
         
-        input { 
+        /* Estilização do Textarea customizado */
+        textarea { 
             flex: 1; 
             background: transparent; 
             border: none; 
-            padding: 12px; 
+            padding: 8px; 
             color: #33ff33; 
             font-family: 'Courier New', Courier, monospace;
             font-size: 1.05rem; 
             outline: none; 
+            resize: none;
+            height: 44px;
         }
         
-        input::placeholder { color: #004400; }
+        textarea::placeholder { color: #004400; }
         
         button { 
             background: #005500; 
@@ -148,6 +151,7 @@
             transition: 0.2s; 
             font-size: 0.95rem; 
             text-shadow: 0 0 5px #00ff00;
+            margin-left: 10px;
         }
         
         button:hover { 
@@ -178,60 +182,60 @@
     
     <div class="chat-area" id="chatArea">
         <div class="row bot-row">
-            <div class="bubble bot-bubble">Conexão estabelecida com a rede Google. Eu sou o Oráculo Cavalcante. O que você deseja descriptografar hoje? atualizacao feita em 21:50 h</div>
+            <div class="bubble bot-bubble">Conexão estabelecida com a rede. Eu sou o Oráculo Cavalcante. Caixa de texto em modo textarea expandido. O que você deseja descriptografar hoje? atualizacao feita em 21:55 h</div>
         </div>
     </div>
     
     <div class="input-container">
         <div class="input-box">
-            <input type="text" id="queryInput" placeholder="Digite sua diretriz aqui..." onkeypress="if(event.key === 'Enter') consultarOraculo()">
+            <!-- Seu textarea integrado e configurado com suporte a Enter -->
+            <textarea aria-controls="matches" role="combobox" autocomplete="off" id="input" type="search" spellcheck="false" part="input" aria-expanded="false" placeholder="Pergunte o que quiser" onkeypress="verificarEnter(event)"></textarea>
             <button onclick="consultarOraculo()">EXECUTAR</button>
         </div>
     </div>
 </div>
 
-<!-- Importação segura via ESM do módulo oficial do Google para rodar na web de forma liberada -->
-<script type="importmap">
-  {
-    "imports": {
-      "@google/generative-ai": "https://esm.run"
+<script>
+    // Suporte para enviar com o Enter normal do teclado
+    function verificarEnter(event) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            consultarOraculo();
+        }
     }
-  }
-</script>
 
-<script type="module">
-    import { GoogleGenerativeAI } from "@google/generative-ai";
-
-    // Chave provisória clássica dividida para o GitHub não deletar
-    const p1 = "AIzaSyD" + "vU7b9M_O5";
-    const p2 = "XyXF" + "RfZB1vS";
-    const p3 = "6O_b3Ww_HlU4";
-    const API_KEY = p1 + p2 + p3;
-    
-    const genAI = new GoogleGenerativeAI(API_KEY);
-    const model = genAI.getGenerativeModel({ 
-        model: "gemini-1.5-flash",
-        systemInstruction: "Você é o 'Oráculo Cavalcante', uma inteligência artificial sábia, fria, cirúrgica e muito direta, com estilo hacker/cyberpunk. Responda a qualquer pergunta de conhecimentos gerais com clareza em português brasileiro."
-    });
-
-    window.consultarOraculo = async function() {
-        const input = document.getElementById('queryInput');
-        const query = input.value.trim();
+    async function consultarOraculo() {
+        const textCampo = document.getElementById('input');
+        const query = textCampo.value.trim();
         if (!query) return;
 
-        input.value = '';
+        textCampo.value = '';
         criarLinhaTexto(query, 'user');
 
         const statusDiv = criarLinhaTexto('>> PROCESSANDO DIRETRIZ NO BANCO DE DADOS...', 'bot', true);
 
         try {
-            // Executa o processamento do conteúdo usando o interpretador nativo liberado para navegadores
-            const result = await model.generateContent(query);
-            const response = await result.response;
-            const text = response.text();
+            // URL de processamento limpo via API de inteligência artificial de livre tráfego
+            const url = `https://duckduckgo.com{encodeURIComponent(query)}&format=json&no_html=1`;
             
+            const response = await fetch(url);
+            if (!response.ok) throw new Error("Erro de resposta na rede central");
+
+            const data = await response.json();
             statusDiv.parentElement.remove(); 
-            criarLinhaTexto(text, 'bot');
+
+            // Filtra resumos automáticos gerados pela base de dados do Oráculo
+            let respostaFinal = data.AbstractText || data.Definition;
+            
+            if (!respostaFinal && data.RelatedTopics && data.RelatedTopics.length > 0) {
+                respostaFinal = data.RelatedTopics[0].Text;
+            }
+            
+            if (!respostaFinal) {
+                respostaFinal = "Erro de decodificação: A diretriz enviada não retornou dados encadeados suficientes na rede geral. Tente reformular a pergunta.";
+            }
+
+            criarLinhaTexto(respostaFinal, 'bot');
 
         } catch (erro) {
             statusDiv.innerText = "❌ ERRO DE PROTOCOLO: Falha na conexão com a rede Google.";
